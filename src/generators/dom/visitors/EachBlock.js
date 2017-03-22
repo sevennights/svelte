@@ -2,10 +2,7 @@ import CodeBuilder from '../../../utils/CodeBuilder.js';
 import deindent from '../../../utils/deindent.js';
 import getBuilders from '../utils/getBuilders.js';
 
-const reserved = {
-	component: true,
-	root: true
-};
+const reserved = new Set( [ 'component', 'root' ] );
 
 export default {
 	enter ( generator, node ) {
@@ -181,7 +178,7 @@ export default {
 		let context = node.context;
 		let c = 1;
 
-		while ( context in reserved || ~generator.current.params.indexOf( context ) ) {
+		while ( reserved.has( context ) || ~generator.current.params.indexOf( context ) ) {
 			context = `${node.context}$${c++}`;
 		}
 

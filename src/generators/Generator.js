@@ -18,9 +18,9 @@ export default class Generator {
 		this.options = options;
 
 		this.imports = [];
-		this.helpers = {};
-		this.components = {};
-		this.events = {};
+		this.helpers = new Set();
+		this.components = new Set();
+		this.events = new Set();
 
 		this.bindingGroups = [];
 
@@ -38,25 +38,25 @@ export default class Generator {
 
 		// allow compiler to deconflict user's `import { get } from 'whatever'` and
 		// Svelte's builtin `import { get, ... } from 'svelte/shared.js'`;
-		this.importedNames = {};
+		this.importedNames = new Set();
 
-		this.usedNames = {};
+		this.usedNames = new Set();
 
 		const getAliaser = () => {
-			const aliases = {};
+			const aliases = new Map();
 			return name => {
-				if ( !( name in aliases ) ) {
+				if ( !aliases.has( name ) ) {
 					let alias = name;
 					let i = 1;
-					while ( alias in this.usedNames ) {
+					while ( this.usedNames.has( alias ) ) {
 						alias = `${name}$${i++}`;
 					}
-					this.usedNames[ alias ] = true;
+					this.usedNames.add( alias );
 
-					aliases[ name ] = alias;
+					aliases.set( name, alias );
 				}
 
-				return aliases[ name ];
+				return aliases.get( name );
 			};
 		};
 
@@ -100,7 +100,7 @@ export default class Generator {
 					const { name } = flattenReference( node );
 					if ( scope.has( name ) ) return;
 
-					if ( parent && parent.type === 'CallExpression' && node === parent.callee && helpers[ name ] ) {
+					if ( parent && parent.type === 'CallExpression' && node === parent.callee && helpers.has( name ) ) {
 						code.prependRight( node.start, `${self.alias( 'template' )}.helpers.` );
 					}
 
@@ -282,8 +282,8 @@ export default class Generator {
 					imports.push( node );
 					this.code.remove( a, b );
 					node.specifiers.forEach( specifier => {
-						this.importedNames[ specifier.local.name ] = true;
-						this.usedNames[ specifier.local.name ] = true;
+						this.importedNames.add( specifier.local.name );
+						this.usedNames.add( specifier.local.name );
 					});
 				}
 			}
@@ -298,7 +298,7 @@ export default class Generator {
 				} else {
 					const { declarations } = annotateWithScopes( js );
 					let template = 'template';
-					for ( let i = 1; template in declarations; template = `template$${i++}` );
+					for ( let i = 1; declarations.has( template ); template = `template$${i++}` );
 
 					this.code.overwrite( defaultExport.start, defaultExport.declaration.start, `var ${template} = ` );
 
@@ -323,7 +323,7 @@ export default class Generator {
 			[ 'helpers', 'events', 'components' ].forEach( key => {
 				if ( templateProperties[ key ] ) {
 					templateProperties[ key ].value.properties.forEach( prop => {
-						this[ key ][ prop.key.name ] = prop.value;
+						this[ key ].add( prop.key.name );
 					});
 				}
 			});

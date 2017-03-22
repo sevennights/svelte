@@ -5,7 +5,7 @@ import Component from './Component.js';
 
 export default {
 	enter ( generator, node ) {
-		const isComponent = node.name in generator.components || node.name === ':Self';
+		const isComponent = generator.components.has( node.name ) || node.name === ':Self';
 		if ( isComponent ) {
 			return Component.enter( generator, node );
 		}
@@ -100,7 +100,7 @@ export default {
 	},
 
 	leave ( generator, node ) {
-		const isComponent = node.name in generator.components;
+		const isComponent = generator.components.has( node.name );
 		if ( isComponent ) {
 			return Component.leave( generator, node );
 		}

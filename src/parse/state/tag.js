@@ -11,17 +11,16 @@ const invalidUnquotedAttributeCharacters = /[\s"'=<>\/`]/;
 
 const SELF = ':Self';
 
-const specials = {
-	script: {
+const specials = new Map( [
+	[ 'script', {
 		read: readScript,
 		property: 'js'
-	},
-
-	style: {
+	} ],
+	[ 'style', {
 		read: readStyle,
 		property: 'css'
-	}
-};
+	} ]
+] );
 
 // based on http://developers.whatwg.org/syntax.html#syntax-tag-omission
 const disallowedContents = {
@@ -131,8 +130,8 @@ export default function tag ( parser ) {
 	parser.allowWhitespace();
 
 	// special cases – top-level <script> and <style>
-	if ( name in specials && parser.stack.length === 1 ) {
-		const special = specials[ name ];
+	if ( specials.has( name ) && parser.stack.length === 1 ) {
+		const special = specials.get( name );
 
 		if ( parser[ special.property ] ) {
 			parser.index = start;
