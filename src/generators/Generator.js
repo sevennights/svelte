@@ -31,7 +31,8 @@ export default class Generator {
 		this.elementDepth = 0;
 
 		this.code = new MagicString( source );
-		this.getUniqueName = counter( names );
+		const thisCounter = counter( names );
+		this.getUniqueName = name => this.aliasUniqueName( thisCounter( name ) );
 		this.cssId = parsed.css ? `svelte-${parsed.hash}` : '';
 		this.usesRefs = false;
 
@@ -61,6 +62,7 @@ export default class Generator {
 
 		this.alias = getAliaser();
 		this.aliasUniqueName = getAliaser();
+		this.aliasUniqueNameMaker = getAliaser();
 
 		this._callbacks = {};
 	}
@@ -253,7 +255,7 @@ export default class Generator {
 
 	getUniqueNameMaker () {
 		const thisCounter = counter( this.names );
-		return name => this.aliasUniqueName( thisCounter( name ) );
+		return name => this.aliasUniqueNameMaker( thisCounter( name ) );
 	}
 
 	parseJs () {
