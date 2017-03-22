@@ -39,7 +39,10 @@ export default class Generator {
 		// Svelte's builtin `import { get, ... } from 'svelte/shared.js'`;
 		this.importedNames = {};
 
-		this.aliases = {};
+		this.usedNames = {};
+
+		this.alias = this.getAliaser();
+		this.aliasUniqueName = this.getAliaser();
 
 		this._callbacks = {};
 	}
@@ -51,20 +54,6 @@ export default class Generator {
 				this.code.addSourcemapLocation( node.end );
 			}
 		});
-	}
-
-	alias ( name ) {
-		if ( !( name in this.aliases ) ) {
-			let alias = name;
-			let i = 1;
-			while ( alias in this.importedNames ) {
-				alias = `${name}$${i++}`;
-			}
-
-			this.aliases[ name ] = alias;
-		}
-
-		return this.aliases[ name ];
 	}
 
 	contextualise ( expression, isEventHandler ) {
@@ -244,8 +233,27 @@ export default class Generator {
 		};
 	}
 
+	getAliaser () {
+		const aliases = {};
+		return name => {
+			if ( !( name in aliases ) ) {
+				let alias = name;
+				let i = 1;
+				while ( alias in this.usedNames ) {
+					alias = `${name}$${i++}`;
+				}
+				this.usedNames[ alias ] = true;
+
+				aliases[ name ] = alias;
+			}
+
+			return aliases[ name ];
+		};
+	}
+
 	getUniqueNameMaker () {
-		return counter( this.names );
+		const thisCounter = counter( this.names );
+		return name => this.aliasUniqueName( thisCounter( name ) );
 	}
 
 	parseJs () {
@@ -273,6 +281,7 @@ export default class Generator {
 					this.code.remove( a, b );
 					node.specifiers.forEach( specifier => {
 						this.importedNames[ specifier.local.name ] = true;
+						this.usedNames[ specifier.local.name ] = true;
 					});
 				}
 			}

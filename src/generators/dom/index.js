@@ -409,7 +409,7 @@ export default function dom ( parsed, source, options, names ) {
 		}
 
 		const names = Object.keys( generator.uses ).map( name => {
-			return name !== generator.aliases[ name ] ? `${name} as ${generator.aliases[ name ]}` : name;
+			return name !== generator.alias( name ) ? `${name} as ${generator.alias( name )}` : name;
 		});
 
 		builders.main.addLineAtStart(
@@ -418,7 +418,7 @@ export default function dom ( parsed, source, options, names ) {
 	} else {
 		Object.keys( generator.uses ).forEach( key => {
 			const fn = shared[ key ]; // eslint-disable-line import/namespace
-			builders.main.addBlock( fn.toString().replace( /^function [^(]*/, 'function ' + generator.aliases[ key ] ) );
+			builders.main.addBlock( fn.toString().replace( /^function [^(]*/, 'function ' + generator.alias( key ) ) );
 		});
 	}
 
