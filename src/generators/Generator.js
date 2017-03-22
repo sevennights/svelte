@@ -26,7 +26,7 @@ export default class Generator {
 
 		// track which properties are needed, so we can provide useful info
 		// in dev mode
-		this.expectedProperties = {};
+		this.expectedProperties = new Set();
 
 		this.elementDepth = 0;
 
@@ -150,7 +150,7 @@ export default class Generator {
 		});
 
 		dependencies.forEach( name => {
-			this.expectedProperties[ name ] = true;
+			this.expectedProperties.add( name );
 		});
 
 		return {
