@@ -31,8 +31,7 @@ export default class Generator {
 		this.elementDepth = 0;
 
 		this.code = new MagicString( source );
-		const thisCounter = counter( names );
-		this.getUniqueName = name => this.aliasUniqueName( thisCounter( name ) );
+		this.getUniqueName = counter( this, 'aliasUniqueName' );
 		this.cssId = parsed.css ? `svelte-${parsed.hash}` : '';
 		this.usesRefs = false;
 
@@ -254,8 +253,7 @@ export default class Generator {
 	}
 
 	getUniqueNameMaker () {
-		const thisCounter = counter( this.names );
-		return name => this.aliasUniqueNameMaker( thisCounter( name ) );
+		return counter( this, 'aliasUniqueNameMaker' );
 	}
 
 	parseJs () {
