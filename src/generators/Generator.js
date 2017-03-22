@@ -41,8 +41,26 @@ export default class Generator {
 
 		this.usedNames = {};
 
-		this.alias = this.getAliaser();
-		this.aliasUniqueName = this.getAliaser();
+		const getAliaser = () => {
+			const aliases = {};
+			return name => {
+				if ( !( name in aliases ) ) {
+					let alias = name;
+					let i = 1;
+					while ( alias in this.usedNames ) {
+						alias = `${name}$${i++}`;
+					}
+					this.usedNames[ alias ] = true;
+
+					aliases[ name ] = alias;
+				}
+
+				return aliases[ name ];
+			};
+		};
+
+		this.alias = getAliaser();
+		this.aliasUniqueName = getAliaser();
 
 		this._callbacks = {};
 	}
@@ -230,24 +248,6 @@ export default class Generator {
 		return {
 			code: compiled.toString(),
 			map: compiled.generateMap({ includeContent: true, file: options.outputFilename })
-		};
-	}
-
-	getAliaser () {
-		const aliases = {};
-		return name => {
-			if ( !( name in aliases ) ) {
-				let alias = name;
-				let i = 1;
-				while ( alias in this.usedNames ) {
-					alias = `${name}$${i++}`;
-				}
-				this.usedNames[ alias ] = true;
-
-				aliases[ name ] = alias;
-			}
-
-			return aliases[ name ];
 		};
 	}
 
