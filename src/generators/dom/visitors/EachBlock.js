@@ -111,7 +111,7 @@ export default {
 				// remove old iterations
 				for ( var ${i} = 0; ${i} < ${name}_iterations.length; ${i} += 1 ) {
 					var ${name}_iteration = ${name}_iterations[${i}];
-					if ( !_${name}_lookup[ ${name}_iteration.${localVars.key} ] ) {
+					if ( !_${name}_lookup[ ${name}_iteration.key ] ) {
 						${name}_iteration.teardown( true );
 					}
 				}
