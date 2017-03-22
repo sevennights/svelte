@@ -46,10 +46,7 @@ export default class Generator {
 			return name => {
 				if ( !aliases.has( name ) ) {
 					let alias = name;
-					let i = 1;
-					while ( this.usedNames.has( alias ) ) {
-						alias = `${name}$${i++}`;
-					}
+					for ( let c = 1; this.usedNames.has( alias ); alias = `${name}$${c++}` );
 					this.usedNames.add( alias );
 
 					aliases.set( name, alias );
@@ -296,7 +293,7 @@ export default class Generator {
 				} else {
 					const { declarations } = annotateWithScopes( js );
 					let template = 'template';
-					for ( let i = 1; declarations.has( template ); template = `template$${i++}` );
+					for ( let c = 1; declarations.has( template ); template = `template$${c++}` );
 
 					this.code.overwrite( defaultExport.start, defaultExport.declaration.start, `var ${template} = ` );
 

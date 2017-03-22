@@ -174,13 +174,9 @@ export default {
 		const listNames = Object.assign( {}, generator.current.listNames );
 		listNames[ node.context ] = listName;
 
-		// ensure that contexts like `root` or `component` don't blow up the whole show
+		// ensure that contexts like `root`, `component`, or `key` don't blow up the whole show
 		let context = node.context;
-		let c = 1;
-
-		while ( reserved.has( context ) || ~generator.current.params.indexOf( context ) ) {
-			context = `${node.context}$${c++}`;
-		}
+		for ( let c = 1; reserved.has( context ) || ~generator.current.params.indexOf( context ); context = `${node.context}$${c++}` );
 
 		const contexts = Object.assign( {}, generator.current.contexts );
 		contexts[ node.context ] = context;
