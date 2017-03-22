@@ -2,7 +2,7 @@ import CodeBuilder from '../../../utils/CodeBuilder.js';
 import deindent from '../../../utils/deindent.js';
 import getBuilders from '../utils/getBuilders.js';
 
-const reserved = new Set( [ 'component', 'root' ] );
+const reserved = new Set( [ 'component', 'root', 'key' ] );
 
 export default {
 	enter ( generator, node ) {
