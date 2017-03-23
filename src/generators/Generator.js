@@ -60,7 +60,7 @@ export default class Generator {
 		this.aliasUniqueName = getAliaser();
 		this.aliasUniqueNameMaker = getAliaser();
 
-		this._callbacks = {};
+		this._callbacks = new Map();
 	}
 
 	addSourcemapLocations ( node ) {
@@ -104,19 +104,19 @@ export default class Generator {
 						// noop
 					}
 
-					else if ( name in contexts ) {
-						const context = contexts[ name ];
+					else if ( contexts.has( name ) ) {
+						const context = contexts.get( name );
 						if ( context !== name ) {
 							// this is true for 'reserved' names like `root` and `component`
 							code.overwrite( node.start, node.start + name.length, context, true );
 						}
 
-						dependencies.push( ...contextDependencies[ name ] );
+						dependencies.push( ...contextDependencies.get( name ) );
 						if ( !~usedContexts.indexOf( name ) ) usedContexts.push( name );
 					}
 
-					else if ( indexes[ name ] ) {
-						const context = indexes[ name ];
+					else if ( indexes.has( name ) ) {
+						const context = indexes.get( name );
 						if ( !~usedContexts.indexOf( context ) ) usedContexts.push( context );
 					}
 
@@ -162,7 +162,7 @@ export default class Generator {
 	}
 
 	fire ( eventName, data ) {
-		const handlers = eventName in this._callbacks && this._callbacks[ eventName ].slice();
+		const handlers = this._callbacks.has( eventName ) && this._callbacks.get( eventName ).slice();
 		if ( !handlers ) return;
 
 		for ( let i = 0; i < handlers.length; i += 1 ) {
@@ -360,8 +360,11 @@ export default class Generator {
 	}
 
 	on ( eventName, handler ) {
-		const handlers = this._callbacks[ eventName ] || ( this._callbacks[ eventName ] = [] );
-		handlers.push( handler );
+		if ( this._callbacks.has( eventName ) ) {
+			this._callbacks.get( eventName ).push( handler );
+		} else {
+			this._callbacks.set( eventName, [ handler ] );
+		}
 	}
 
 	pop () {

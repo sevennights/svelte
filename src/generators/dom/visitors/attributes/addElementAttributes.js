@@ -171,8 +171,8 @@ export default function addElementAttributes ( generator, node, local ) {
 			const declarations = usedContexts.map( name => {
 				if ( name === 'root' ) return 'var root = this.__svelte.root;';
 
-				const listName = generator.current.listNames[ name ];
-				const indexName = generator.current.indexNames[ name ];
+				const listName = generator.current.listNames.get( name );
+				const indexName = generator.current.indexNames.get( name );
 
 				return `var ${listName} = this.__svelte.${listName}, ${indexName} = this.__svelte.${indexName}, ${name} = ${listName}[${indexName}]`;
 			});

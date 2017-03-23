@@ -198,12 +198,12 @@ export default function dom ( parsed, source, options, names ) {
 		localElementDepth: 0,
 		key: null,
 
-		contexts: {},
-		indexes: {},
+		contexts: new Map(),
+		indexes: new Map(),
 
 		params: [ 'root' ],
-		indexNames: {},
-		listNames: {},
+		indexNames: new Map(),
+		listNames: new Map(),
 
 		builders: getBuilders(),
 		getUniqueName: generator.getUniqueNameMaker()
