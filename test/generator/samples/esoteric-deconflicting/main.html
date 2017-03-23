@@ -1,0 +1,13 @@
+<template></template>
+<constructor></constructor>
+<RenderEachBlock/>
+{{#each values as key @b}}
+	<span>{{key.a}}</span>
+{{/each}}
+
+<script>
+	import RenderEachBlock from './component.html';
+	export default {
+		components: { RenderEachBlock }
+	};
+</script>
